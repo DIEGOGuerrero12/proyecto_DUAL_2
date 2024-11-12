@@ -1,0 +1,28 @@
+Metadata-Version: 2.1
+Name: grug
+Version: 0.0.0a1
+Summary: A Unified Experience for Python Development
+Home-page: UNKNOWN
+Author: UNKNOWN
+Author-email: UNKNOWN
+License: MIT
+Platform: UNKNOWN
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.6
+Classifier: Programming Language :: Python :: 3.7
+
+# grug
+
+A Unified Experience for Python Development
+
+## What does grug mean?
+
+Grug is an internet slang used to refer to Neanderthals or a caveman
+(internet being internet, more things as well).
+
+This tool's name is inspired from the title of [talk by Russell Keith-Magee][1].
+
+[1]: https://www.youtube.com/watch?v=UtFHIpNPMPA
+
+

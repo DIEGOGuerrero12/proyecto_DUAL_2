@@ -1,42 +1,48 @@
-from fastapi import FastAPI, HTTPException
 import requests
-import os
-from dotenv import load_dotenv
+import json
 
-# Cargar variables de entorno desde el archivo .env
-load_dotenv()
+API_KEY = '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'
+url = "https://api.groq.com/openai/v1/chat/completions"
 
-app = FastAPI()
+def respuesta_ia(texto: str) -> str:
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {API_KEY}"
+    }
+    data = {
+        "messages": [
+            {
+                "role": "system",
+                "content": "Actúa como un asistente virtual."
+            },
+            {
+                "role": "user",
+                "content": texto
+            }
+        ],
+        "model": "mixtral-8x7b-32768",
+        "temperature": 1,
+        "max_tokens": 1024,
+        "top_p": 1,
+        "stream": False,
+        "stop": None
+    }
 
-# Asignar la clave de API directamente en el código
-GROQ_API_KEY = "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"
-
-# Ruta para verificar si el servicio está activo
-@app.get("/")
-def read_root():
-    return {"message": "API de FastAPI con Groq está en funcionamiento"}
-
-# Ruta para interactuar con Groq
-@app.post("/groq")
-def interact_with_groq(query: str):
-    if not GROQ_API_KEY:
-        raise HTTPException(status_code=500, detail="Clave de API de Groq no configurada.")
-    
     try:
-        # Configurar la URL y los encabezados de la API de Groq
-        headers = {"Authorization": f"Bearer {GROQ_API_KEY}"}
-        groq_api_url = "https://console.groq.com/keys"  # Cambia esta URL a la correcta según la documentación
-        response = requests.post(groq_api_url, json={"query": query}, headers=headers)
-        
-        if response.status_code != 200:
-            raise HTTPException(status_code=response.status_code, detail="Error al conectar con Groq.")
-        
+        response = requests.post(url, json=data, headers=headers)
+        response.raise_for_status()  # Verifica si la solicitud fue exitosa
         response_data = response.json()
-        # Obtenemos el resultado y creamos un mensaje conversacional
-        result = response_data.get("result", "No hay respuesta disponible")
-        conversational_response = f"¡Hola! Me complace responderte. Aquí está la respuesta a tu consulta: '{query}' es: {result}"
-        
-        return {"response": conversational_response}
-    
+
+        # Verificar si la respuesta contiene los datos esperados
+        if 'choices' in response_data and response_data['choices']:
+            return response_data['choices'][0]['message']['content']
+        else:
+            # Registrar toda la respuesta en caso de que falten los datos esperados
+            return f"Respuesta inesperada de la API: {response_data}"
+
     except requests.exceptions.RequestException as e:
-        raise HTTPException(status_code=500, detail=f"Error al conectar con Groq: {e}")
+        return f"Error en la solicitud HTTP: {e}"
+    except json.JSONDecodeError:
+        return "Error al decodificar la respuesta JSON de la API"
+    except KeyError:
+        return "Error: La respuesta de la API no contiene las claves esperadas"
