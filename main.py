@@ -11,7 +11,6 @@ app = FastAPI()
 # Asignar la clave de API directamente en el código
 GROQ_API_KEY = "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"
 
-
 # Ruta para verificar si el servicio está activo
 @app.get("/")
 def read_root():
@@ -26,13 +25,18 @@ def interact_with_groq(query: str):
     try:
         # Configurar la URL y los encabezados de la API de Groq
         headers = {"Authorization": f"Bearer {GROQ_API_KEY}"}
-        groq_api_url = "https://console.groq.com/keys"  # Cambia esta URL según la documentación de Groq
+        groq_api_url = "https://console.groq.com/keys"  # Cambia esta URL a la correcta según la documentación
         response = requests.post(groq_api_url, json={"query": query}, headers=headers)
         
         if response.status_code != 200:
             raise HTTPException(status_code=response.status_code, detail="Error al conectar con Groq.")
         
         response_data = response.json()
-        return {"response": response_data.get("result", "No hay respuesta disponible")}
+        # Obtenemos el resultado y creamos un mensaje conversacional
+        result = response_data.get("result", "No hay respuesta disponible")
+        conversational_response = f"¡Hola! Me complace responderte. Aquí está la respuesta a tu consulta: '{query}' es: {result}"
+        
+        return {"response": conversational_response}
+    
     except requests.exceptions.RequestException as e:
         raise HTTPException(status_code=500, detail=f"Error al conectar con Groq: {e}")
