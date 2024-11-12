@@ -1,2 +1,4 @@
 Proyecto_dual
-ejemplo
+||
+|*|
+|hola|
