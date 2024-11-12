@@ -13,3 +13,8 @@ def read_root():
 @app.get("/items/{item_id}")
 def read_item(item_id: int, q: Union[str, None] = None):
     return {"item_id": item_id, "q": q}
+
+@app.get("/v1/{texto}")
+def mostrar_chat(texto:str):
+    respuesta = respuesta_ia(texto)
+    return {"Respuesta": respuesta}
