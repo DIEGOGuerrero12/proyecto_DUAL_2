@@ -6,15 +6,26 @@
 </head>
 <body>
     <h2>Chat con IA</h2>
+    
+    <!-- Enviar mensaje de texto -->
     <div>
         <textarea id="userMessage" rows="4" cols="50" placeholder="Escribe tu mensaje aquí..."></textarea>
         <button onclick="sendMessage()">Enviar</button>
     </div>
+    
+    <!-- Enviar imagen -->
+    <div>
+        <input type="file" id="imageInput" accept="image/*">
+        <button onclick="sendImage()">Enviar Imagen</button>
+    </div>
+    
+    <!-- Mostrar respuesta -->
     <div id="chatResponse">
         <p><strong>IA:</strong> <span id="responseText">Aquí aparecerá la respuesta de la IA</span></p>
     </div>
 
     <script>
+        // Función para enviar mensaje de texto
         async function sendMessage() {
             const query = document.getElementById("userMessage").value;
             
@@ -24,7 +35,6 @@
             }
             
             try {
-                // Aquí hacemos la solicitud a la API FastAPI en el archivo `dudo.py`
                 const response = await fetch(`http://127.0.0.1:8000/groq/${encodeURIComponent(query)}`);
                 const data = await response.json();
 
@@ -35,6 +45,38 @@
                 }
             } catch (error) {
                 console.error("Error al enviar el mensaje:", error);
+                document.getElementById("responseText").textContent = "Error al conectar con el servidor.";
+            }
+        }
+
+        // Función para enviar imagen
+        async function sendImage() {
+            const imageInput = document.getElementById("imageInput");
+            const file = imageInput.files[0];
+            
+            if (!file) {
+                alert("Por favor, selecciona una imagen antes de enviar.");
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append("file", file);
+
+            try {
+                const response = await fetch("http://127.0.0.1:8000/upload-image", {
+                    method: "POST",
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    document.getElementById("responseText").textContent = data.description;
+                } else {
+                    document.getElementById("responseText").textContent = "Hubo un problema al procesar la imagen.";
+                }
+            } catch (error) {
+                console.error("Error al enviar la imagen:", error);
                 document.getElementById("responseText").textContent = "Error al conectar con el servidor.";
             }
         }
