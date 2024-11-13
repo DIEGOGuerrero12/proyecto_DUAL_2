@@ -62,3 +62,14 @@ def interact_with_groq(query: str, additional_query: str = None):
 
     except requests.exceptions.RequestException as e:
         raise HTTPException(status_code=500, detail=f"Error al conectar con Groq: {e}")
+
+
+from fastapi.middleware.cors import CORSMiddleware
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Permitir todos los orígenes; ajusta esto si es necesario.
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Chat con IA</title>
+</head>
+<body>
+    <h2>Chat con IA</h2>
+    <div>
+        <textarea id="userMessage" rows="4" cols="50" placeholder="Escribe tu mensaje aquí..."></textarea>
+        <button onclick="sendMessage()">Enviar</button>
+    </div>
+    <div id="chatResponse">
+        <p><strong>IA:</strong> <span id="responseText">Aquí aparecerá la respuesta de la IA</span></p>
+    </div>
+
+    <script>
+        async function sendMessage() {
+            const query = document.getElementById("userMessage").value;
+            
+            if (!query) {
+                alert("Por favor, escribe un mensaje antes de enviar.");
+                return;
+            }
+            
+            try {
+                // Aquí hacemos la solicitud a la API FastAPI en el archivo `dudo.py`
+                const response = await fetch(`http://127.0.0.1:8000/groq/${encodeURIComponent(query)}`);
+                const data = await response.json();
+
+                if (response.ok) {
+                    document.getElementById("responseText").textContent = data.response;
+                } else {
+                    document.getElementById("responseText").textContent = "Hubo un problema con la respuesta.";
+                }
+            } catch (error) {
+                console.error("Error al enviar el mensaje:", error);
+                document.getElementById("responseText").textContent = "Error al conectar con el servidor.";
+            }
+        }
+    </script>
+</body>
+</html>
